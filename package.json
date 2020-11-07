@@ -1,0 +1,29 @@
+{
+  "name": "wow-addon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc:run:server": "npm run tsc:server && npm run server",
+    "server": "cd server && node build/server.js",
+    "tsc:server": "tsc --project ./server/tsconfig.json",
+    "tsc:webapp": "tsc --project ./webapp/tsconfig.json",
+    "webapp:dev": "cd webapp && webpack --config webpack.config.dev.js --watch",
+    "webapp:prod": "cd webapp && webpack --config webpack.config.prod.js",
+    "npm:install-all": "npm install && cd server && npm install && cd ../webapp && npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^5.0.0",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^1.1.0",
+    "ts-loader": "^8.0.6",
+    "typescript": "^4.0.3",
+    "webpack": "^5.1.3",
+    "webpack-cli": "^4.1.0",
+    "webpack-merge": "^5.2.0"
+  }
+}

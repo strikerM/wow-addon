@@ -1,0 +1,21 @@
+{
+  "name": "wow-addon-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs-extra": "^9.0.1",
+    "knex": "^0.21.6",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/fs-extra": "^9.0.2",
+    "@types/node": "^14.11.8"
+  }
+}
