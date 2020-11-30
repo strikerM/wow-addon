@@ -40,6 +40,8 @@ db.connect()
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 
+let elvuiAddons: AddonType[] = [];
+
 function getAddonDetails(addon: AddonType) {
     if (addon.provider === 'curse') {
         return getAddonDetailsFromCurse(addon);
@@ -52,7 +54,8 @@ function getAddonDetails(addon: AddonType) {
     throw new Error(`Unknown prover ${addon.provider} for addon ${addon.addonId} ${addon.clientType} ${addon.name}`);
 }
 
-async function getAddonDetailsFromElvui(addon: AddonType) {
+/*
+async function getAddonDetailsFromElvui_old(addon: AddonType) {
     const url = new URL(`${config.elvui.apiUrl}`);
     const { clientType, addonId } = addon;
 
@@ -73,6 +76,48 @@ async function getAddonDetailsFromElvui(addon: AddonType) {
 
     const addonDetails = await ajax.getJson(url);
     return Addon.fromElvUi(addonDetails, clientType);
+}
+*/
+
+async function getAddonDetailsFromElvui(addon: AddonType) {
+    const { clientType, addonId } = addon;
+    const elvUiAddons = await getElvUiAddons(clientType);
+    return elvUiAddons.find(elvUiAddon =>  String(elvUiAddon.addonId) === String(addonId));
+}
+
+async function getElvUiAddons(clientType: string): Promise<AddonType[]> {
+    if (elvuiAddons && elvuiAddons.length) {
+        return elvuiAddons;
+    }
+
+    const url = new URL(`${config.elvui.apiUrl}`);
+    const key = clientType === 'retail' ? 'addons' : 'classic-addons';
+    url.searchParams.append(key, 'all');
+
+    let addons: IElvUiAddon[] = [];
+    if (clientType === 'retail') {
+        //for retail elvui and tukui addons are missing with the "all" value, in classic they are returned
+
+        const elvUiUrl = new URL(`${config.elvui.apiUrl}`);
+        elvUiUrl.searchParams.append('ui', 'elvui');
+
+        const tukUiUrl = new URL(`${config.elvui.apiUrl}`);
+        tukUiUrl.searchParams.append('ui', 'tukui');
+
+        const values = await Promise.all([
+            ajax.getJson(elvUiUrl),
+            ajax.getJson(tukUiUrl),
+            ajax.getJson(url),
+        ]);
+
+        addons = [values[0], values[1]].concat(values[2]);
+    }
+    else {
+        addons = await ajax.getJson(url);
+    }
+
+    elvuiAddons = addons.map(addon => Addon.fromElvUi(addon, clientType)).filter(isNotNull);
+    return elvuiAddons;
 }
 
 async function getAddonDetailsFromCurse(addon: AddonType) {
@@ -190,33 +235,7 @@ export async function findAddons(searchFilter: string, provider: string, clientT
     }
 
     if (provider === 'elvui') {
-        const url = new URL(`${config.elvui.apiUrl}`);
-        const key = clientType === 'retail' ? 'addons' : 'classic-addons';
-        url.searchParams.append(key, 'all');
-
-        let addons: IElvUiAddon[] = [];
-        if (clientType === 'retail') {
-            //for retail elvui and tukui addons are missing with the "all" value, in classic they are returned
-
-            const elvUiUrl = new URL(`${config.elvui.apiUrl}`);
-            elvUiUrl.searchParams.append('ui', 'elvui');
-
-            const tukUiUrl = new URL(`${config.elvui.apiUrl}`);
-            tukUiUrl.searchParams.append('ui', 'tukui');
-
-            const values = await Promise.all([
-                ajax.getJson(elvUiUrl),
-                ajax.getJson(tukUiUrl),
-                ajax.getJson(url),
-            ]);
-
-            addons = [values[0], values[1]].concat(values[2]);
-        }
-        else {
-            addons = await ajax.getJson(url);
-        }
-
-        return addons.map(addon => Addon.fromElvUi(addon, clientType)).filter(isNotNull);
+        return getElvUiAddons(clientType);
     }
 
     console.error('Unknown provider');

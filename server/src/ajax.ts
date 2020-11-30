@@ -12,10 +12,7 @@ export function post(url: string | URL, data: any) {
 
 export function getJson(url: string | URL) {
     return request(url)
-        .then(data => {
-            console.log('url data', url, data);
-            return JSON.parse(data)
-        });
+        .then(data => JSON.parse(data));
 }
 
 export function request(url: string | URL, options: https.RequestOptions = {}, data?: any): Promise<any> {
