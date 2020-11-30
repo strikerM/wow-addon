@@ -37,3 +37,22 @@ export function padZero(value: string | number) {
     }
     return String(v);
 }
+
+export function sanitizeUrl(value: any): string {
+    let url;
+
+    try {
+        url = new URL(value);
+    }
+    catch (err) { }
+
+    if (!url) {
+        return '#';
+    }
+
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+        return '#';
+    }
+
+    return value;
+}

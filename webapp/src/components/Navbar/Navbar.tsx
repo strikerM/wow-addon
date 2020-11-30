@@ -1,20 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveTab, setClientType } from '../../store';
 
-interface INavbarProps {
-    setActiveTab(value: string): void;
-    setClientType(value: string): void;
-}
+export default React.memo(function Navbar() {
+    console.log('render Navbar');
+    const dispatch = useDispatch();
 
-export default React.memo(function Navbar({ setActiveTab, setClientType }: INavbarProps) {
-
-    const myAddonsOnClick = () => setActiveTab('my-addons');
-    const findAddonsOnClick = () => setActiveTab('find-addons');
-    const settingsOnClick = () => setActiveTab('settings');
-    const clientTypeOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => setClientType(e.target.value);
-
-    useEffect(() => {
-        console.log('render Navbar');
-    });
+    const myAddonsOnClick = () => dispatch(setActiveTab('my-addons'));
+    const findAddonsOnClick = () => dispatch(setActiveTab('find-addons'));
+    const settingsOnClick = () => dispatch(setActiveTab('settings'));
+    const clientTypeOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setClientType(e.target.value));
 
     return (
         <section className="section">

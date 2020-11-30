@@ -1,25 +1,23 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Table, { IColumn } from '../common/Table';
 import LinkNewTab from '../common/Link';
 import { formatNumber, getLocalId } from '../../utils/utils';
 
-import { AddonType } from '../../../../addon';
+import { IStoreState, installAddon } from '../../store';
+import { IAddon } from '../../../../types';
 
-interface IFindAddons {
-    foundAddons: AddonType[];
-    myAddons: AddonType[];
-    onInstall(id: string | number): void;
-}
+export default function FindAddons() {
+    const dispatch = useDispatch();
+    const [foundAddons, myAddons] = useSelector((state: IStoreState) => [state.foundAddons, state.myAddons]);
 
-export default function FindAddons({ foundAddons, myAddons, onInstall }: IFindAddons) {
-    console.log(arguments);
     const columns: IColumn[] = [
         {
             name: 'Name',
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return (
                     <>
                         <LinkNewTab href={addon.website}>{addon.name}</LinkNewTab>
@@ -33,15 +31,15 @@ export default function FindAddons({ foundAddons, myAddons, onInstall }: IFindAd
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
-                const key = getLocalId(addon);
-                const myAddon = myAddons.find(myAddon => getLocalId(myAddon)=== key);
+            component(column: IColumn, addon: IAddon) {
+                const localId = getLocalId(addon);
+                const myAddon = myAddons.find(myAddon => getLocalId(myAddon) === localId);
 
                 if (!myAddon) {
                     const isLoading = addon.isFetching ? 'is-loading' : '';
                     return (
                         <button className={`button is-primary is-rounded is-small ${isLoading}`}
-                            onClick={() => onInstall(addon.addonId)}>
+                            onClick={() => dispatch(installAddon(addon.addonId))}>
                             Install
                         </button>
                     );
@@ -59,7 +57,7 @@ export default function FindAddons({ foundAddons, myAddons, onInstall }: IFindAd
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return addon.gameVers;
             },
         },
@@ -68,7 +66,7 @@ export default function FindAddons({ foundAddons, myAddons, onInstall }: IFindAd
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return addon.authors;
             },
         },

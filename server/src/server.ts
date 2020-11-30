@@ -125,10 +125,10 @@ app.get('/settings', (req, res) => {
 
 app.post('/wow-folder', (req, res) => {
     addons.setWowFolder(req.body.wowFolder)
-    .then(() => res.json({}))
+        .then(() => res.json({}))
         .catch(err => {
             console.error(err);
-            res.json({});
+            res.json({ err: err.message });
         });
 });
 

@@ -1,21 +1,16 @@
 import React from 'react';
-import { AddonType } from '../../../../addon';
+import { useSelector } from 'react-redux';
 import MyAddons from './MyAddons';
 import FindAddons from './FindAddons';
+import { IStoreState } from '../../store';
 
-interface IAddonsProps {
-    myAddons: AddonType[];
-    foundAddons: AddonType[];
-    activeTab: string;
-    onInstall(id: string | number): void;
-    onUpdate(addon: AddonType): void;
-    onRemove(addon: AddonType): void;
-}
+export default React.memo(function Addons() {
+    const activeTab = useSelector((state: IStoreState) => state.activeTab);
+    console.log('Addons render');
 
-export default React.memo(function Addons({ myAddons, foundAddons, activeTab, onInstall, onUpdate, onRemove }: IAddonsProps) {
     if (activeTab === 'my-addons') {
-        return <MyAddons myAddons={myAddons} onUpdate={onUpdate} onRemove={onRemove} />;
+        return <MyAddons />;
     }
 
-    return <FindAddons foundAddons={foundAddons} myAddons={myAddons} onInstall={onInstall} />;
+    return <FindAddons />;
 });

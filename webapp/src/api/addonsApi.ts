@@ -1,5 +1,5 @@
 import { get, post, put, remove } from './methods';
-import { AddonType } from '../../../addon';
+import { IAddon, IFindAddons, IInstallAddon } from '../../../types';
 
 const routes = {
     getAddons: './addons/',
@@ -9,11 +9,11 @@ const routes = {
     removeAddon: './addons?',
 };
 
-export function getAddons(clientType: string): Promise<AddonType[]> {
+export function getAddons(clientType: string): Promise<IAddon[]> {
     return get(routes.getAddons + clientType);
 }
 
-export function findAddons(searchFilter: string, provider: string, clientType: string): Promise<AddonType[]> {
+export function findAddons({ searchFilter, provider, clientType }: IFindAddons): Promise<IAddon[]> {
     const params = new URLSearchParams();
     params.append('searchFilter', searchFilter);
     params.append('provider', provider);
@@ -22,17 +22,11 @@ export function findAddons(searchFilter: string, provider: string, clientType: s
     return get(routes.findAddons + params.toString());
 }
 
-interface IInstallAddon {
-    id: string | number;
-    provider: string;
-    clientType: string;
-}
-
-export function installAddon(addonDetails: IInstallAddon): Promise<AddonType> {
+export function installAddon(addonDetails: IInstallAddon): Promise<IAddon> {
     return post(routes.installAddon, addonDetails);
 }
 
-export function updateAddon(id: number): Promise<AddonType> {
+export function updateAddon(id: number): Promise<IAddon> {
     return put(routes.updateAddon, { id });
 }
 

@@ -12,10 +12,13 @@ export function post(url: string | URL, data: any) {
 
 export function getJson(url: string | URL) {
     return request(url)
-        .then(data => JSON.parse(data));
+        .then(data => {
+            console.log('url data', url, data);
+            return JSON.parse(data)
+        });
 }
 
-export function request(url:  string | URL, options: https.RequestOptions = {}, data?: any): Promise<any> {
+export function request(url: string | URL, options: https.RequestOptions = {}, data?: any): Promise<any> {
     return new Promise((resolve, reject) => {
         const req = https.request(url, options, (res) => {
             let data = '';
@@ -49,7 +52,7 @@ export function request(url:  string | URL, options: https.RequestOptions = {}, 
     });
 }
 
-function _download(url: string | URL, dest: string, file: fs.WriteStream, resolve: ((_?: any) => void), reject: ((err? : Error) => void)): void {
+function _download(url: string | URL, dest: string, file: fs.WriteStream, resolve: ((_?: any) => void), reject: ((err?: Error) => void)): void {
     const req = https.get(url, (res) => {
         if ((res.statusCode === 301 || res.statusCode === 302) && res.headers.location) {
             return _download(res.headers.location, dest, file, resolve, reject)
@@ -72,12 +75,12 @@ function _download(url: string | URL, dest: string, file: fs.WriteStream, resolv
     });
 
     req.on('error', (err) => {
-        fs.unlink(dest, () => {});
+        fs.unlink(dest, () => { });
         reject(err);
     });
 
     file.on('error', (err) => {
-        fs.unlink(dest, () => {});
+        fs.unlink(dest, () => { });
         reject(err);
     });
 }

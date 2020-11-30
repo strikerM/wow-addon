@@ -1,12 +1,10 @@
 import { get, post } from './methods';
 
+import { ISettings } from '../../../types';
+
 const routes = {
     getSettings: './settings',
     setWowFolder: './wow-folder',
-};
-
-interface ISettings {
-    wowFolder: string;
 };
 
 export function getSettings(): Promise<ISettings> {

@@ -1,26 +1,22 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Table, { IColumn } from '../common/Table';
 import LinkNewTab from '../common/Link';
 import { formatDate, formatNumber } from '../../utils/utils';
 
-import { AddonType } from '../../../../addon';
+import { IStoreState, updateAddon, removeAddon } from '../../store';
+import { IAddon } from '../../../../types';
 
-interface IMyAddonsProps {
-    myAddons: AddonType[];
-    onUpdate(addon: AddonType): void;
-    onRemove(addon: AddonType): void;
-}
-
-export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IMyAddonsProps) {
-    //pushProps({myAddons, onUpdate, onRemove})
-    
+export default React.memo(function MyAddons() {
+    const dispatch = useDispatch();
+    const myAddons = useSelector((state: IStoreState) => state.myAddons);
     const columns: IColumn[] = [
         {
             name: 'Name',
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return (
                     <>
                         <LinkNewTab href={addon.website}>{addon.name}</LinkNewTab>
@@ -34,7 +30,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 if (addon.upstreamVer === addon.ver && addon.upstreamDate === addon.date) {
                     return 'Up to Date';
                 }
@@ -43,7 +39,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
 
                 return (
                     <button className={`button is-primary is-rounded is-small ${isLoading}`}
-                        onClick={() => onUpdate(addon)}
+                        onClick={() => dispatch(updateAddon(addon.id || -1))}
                     >
                         Update
                     </button>
@@ -55,7 +51,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return addon.ver;
             },
         },
@@ -64,7 +60,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return addon.upstreamVer;
             },
         },
@@ -73,7 +69,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return formatDate(new Date(addon.date), 'YYYY-MM-DD');
             },
         },
@@ -82,7 +78,7 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return column.name;
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return formatDate(new Date(addon.upstreamDate), 'YYYY-MM-DD');
             },
         },
@@ -91,11 +87,11 @@ export default React.memo(function MyAddons({ myAddons, onUpdate, onRemove }: IM
             headerComponent(column: IColumn) {
                 return '';
             },
-            component(column: IColumn, addon: AddonType) {
+            component(column: IColumn, addon: IAddon) {
                 return (
                     <button className="delete is-small"
                         style={{ backgroundColor: '#f14668' }}
-                        onClick={(e) => e.shiftKey ? onRemove(addon) : null}
+                        onClick={(e) => e.shiftKey ? dispatch(removeAddon(addon.id || -1)) : null}
                     >
                         Remove
                     </button>
