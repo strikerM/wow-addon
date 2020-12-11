@@ -41,6 +41,8 @@ db.connect()
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 
 let elvuiAddons: AddonType[] = [];
+getElvUiAddons('retail')
+    .catch(err => console.error(err));
 
 function getAddonDetails(addon: AddonType) {
     if (addon.provider === 'curse') {
@@ -111,12 +113,14 @@ async function getElvUiAddons(clientType: string): Promise<AddonType[]> {
         ]);
 
         addons = [values[0], values[1]].concat(values[2]);
+        console.log('elvui res', values[0]);
     }
     else {
         addons = await ajax.getJson(url);
     }
 
     elvuiAddons = addons.map(addon => Addon.fromElvUi(addon, clientType)).filter(isNotNull);
+    console.log('elvuiAddons', elvuiAddons.slice(0, 3));
     return elvuiAddons;
 }
 

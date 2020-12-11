@@ -18,5 +18,6 @@ if not errorlevel 1 (
 :StartApp
 cd /D "%~dp0"
 start npm run server
+@timeout /t 5 /nobreak
 rem start chrome.exe localhost:3000 
 start http://localhost:3000
